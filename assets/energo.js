@@ -75,6 +75,21 @@
   /* ---- planned works ---- */
   var NETS = { all: "All networks" };
   var sel = { day: irDate(), net: "all" };
+  /* emergency disconnections from today's incidents (storm damage): the same areas and times as Attelkom's status page */
+  function emergency(d) {
+    var l = (d.incidents && d.incidents.list || []).filter(function (x) {
+      return x.power && x.power.length && x.state !== "ended" && (!x.end || Date.parse(x.end) > Date.now() - 6 * 3600e3);
+    });
+    var now = irDate() + " " + irHM(), h = "";
+    l.forEach(function (x) {
+      var rows = x.power.filter(function (r) { return r.to > now; });
+      if (!rows.length) return;
+      h += "<div class='warn'><b>Emergency disconnections, " + human(rows[0].from.slice(0, 10)) + ".</b> " + ((x.lines && x.lines.power && x.lines.power.en) || "") + "<br>" +
+        rows.map(function (r) { return "<b>" + r.area + "</b> (" + r.addr + "): " + r.from.slice(11) + "–" + r.to.slice(11) + (r.from <= now ? " <span class='st now'>Under way</span>" : ""); }).join("<br>") +
+        "<br><span class=sm>Times of restoration are approximate. Report faults to the line 1-55.</span></div>";
+    });
+    q(".emerg").forEach(function (e) { e.innerHTML = h; e.hidden = !h; });
+  }
   function status(r) {
     var t = irDate();
     if (r.cancel) return ["Cancelled", "done"];
@@ -178,7 +193,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     slider(); counters();
-    today().then(informer).catch(function () { setText(".pw-supply", "Information is temporarily unavailable."); });
+    today().then(function (d) { informer(d); emergency(d); }).catch(function () { setText(".pw-supply", "Information is temporarily unavailable."); });
     outages(); calc(); counter();
   });
 })();
