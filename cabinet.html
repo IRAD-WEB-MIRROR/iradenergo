@@ -39,7 +39,8 @@
 <form class="login" onsubmit="event.preventDefault();document.getElementById('lg-out').hidden=false">
 <label>Personal account number<input id="lg-acc" placeholder="0000 000 000" inputmode="numeric"></label>
 <label>Password<input id="lg-pw" type="password"></label>
-<button class="btn" type="submit">Sign in</button> <a href="#">Forgot password?</a></form>
+<button class="btn" type="submit">Sign in</button> <a href="contacts.html" onclick="event.preventDefault();document.getElementById('lg-fp').hidden=false">Forgot password?</a></form>
+<p id="lg-fp" class="sm" hidden>To restore your password, come to any <a href="contacts.html">customer service centre</a> with your passport and your last bill. The new password is printed on a slip and handed to you in person; it is not sent by e-mail or SMS.</p>
 <p id="lg-out" class="warn" hidden>Error 502: the billing server does not respond. Please try again later or check your bill on <a href="https://e-irad.org/service.html?id=electricity">e-Irad</a>.</p>
 <p class="sm">Your personal account number is printed on the bill, top right. Customers of Talas and Talas District: the account is served by the operator Kervan Elektrik.</p>
 </article><aside class="side">
