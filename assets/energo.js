@@ -161,6 +161,21 @@
     };
   }
 
+  /* ---- e-Irad temporary slip (cabinet.html): planned works at the slip holder's address ---- */
+  function slipWorks() {
+    document.addEventListener("irad-slip", function (ev) {
+      var box = document.querySelector(".isl-works"); if (!box) return;
+      var st = box.getAttribute("data-street"), town = box.getAttribute("data-town"), slug = town.toLowerCase().replace(/ı/g, "i").replace(/\s+/g, "-");
+      var from = irDate(), to = irDate(60);
+      get(ROOT + "data/outages.json").then(function (d) {
+        var rows = d.rows.filter(function (r) { return r.date >= from && r.date <= to && !r.cancel && r.addr.indexOf(st) >= 0 && (r.place === slug || r.addr.indexOf(town) >= 0); });
+        box.innerHTML = "<h3>Planned works at your address</h3>" + (rows.length ? "<table class='isl-t'>" + rows.map(function (r) {
+          return "<tr><td>" + dm(r.date) + "</td><td>" + r.from + "–" + r.to + "</td><td>" + r.work + "</td></tr>"; }).join("") + "</table><p class=sm>Full schedule: <a href='" + ROOT + "outages.html'>planned disconnections</a>.</p>"
+          : "<p>No planned disconnections at your address in the next 60 days.</p>");
+      }).catch(function () {});
+    });
+  }
+
   /* ---- counter ---- */
   function counter() {
     var c = $("cnt"); if (!c) return;
@@ -194,6 +209,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     slider(); counters();
     today().then(function (d) { informer(d); emergency(d); }).catch(function () { setText(".pw-supply", "Information is temporarily unavailable."); });
-    outages(); calc(); counter();
+    outages(); calc(); counter(); slipWorks();
   });
 })();
